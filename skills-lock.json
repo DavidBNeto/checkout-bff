@@ -1,0 +1,138 @@
+{
+  "version": 2,
+  "skills": {
+    "api-designer": {
+      "source": "Jeffallan/claude-skills",
+      "commit": "67c1961b180dc92cf08983344627109e983e8f51",
+      "sourceType": "github",
+      "skillPath": "skills/api-designer/SKILL.md",
+      "computedHash": "1ea51c6f9b6c65d4f93446017bac769fa4d3ac3cdb1197195518caea2e10165d"
+    },
+    "clean-code": {
+      "source": "sickn33/agentic-awesome-skills",
+      "commit": "14cdc0a997462bea4844b4db9ce1951d0c07ce9f",
+      "sourceType": "github",
+      "skillPath": "skills/clean-code/SKILL.md",
+      "computedHash": "12447e66c9334fa608ab29b45ea8076770590d1ccbf2ee705c24cdf24496643d"
+    },
+    "create-spring-boot-java-project": {
+      "source": "github/awesome-copilot",
+      "commit": "f10fdb8b2660ce85c98f220b2f1ca24653768a5c",
+      "sourceType": "github",
+      "skillPath": "skills/create-spring-boot-java-project/SKILL.md",
+      "computedHash": "83878017e8d4fc745271520f3c52c0985b69034eb1953c9df4e313b4845cd1d7"
+    },
+    "docker-build-strategies": {
+      "source": "docker/skills",
+      "commit": "caeee2024f7527d890a29dd1732b62a112f56d0e",
+      "sourceType": "github",
+      "skillPath": "skills/docker-build-strategies/SKILL.md",
+      "computedHash": "a9cc5c3839d60ec8e7ca390292e1d4784bc69cf962413cb17364e7b5a46783e1"
+    },
+    "docker-compose-patterns": {
+      "source": "docker/skills",
+      "commit": "caeee2024f7527d890a29dd1732b62a112f56d0e",
+      "sourceType": "github",
+      "skillPath": "skills/docker-compose-patterns/SKILL.md",
+      "computedHash": "fd752b44e789bbf42f8c0edd92df89c84871d46aee92785230e5260f866e8f99"
+    },
+    "docker-project-foundations": {
+      "source": "docker/skills",
+      "commit": "caeee2024f7527d890a29dd1732b62a112f56d0e",
+      "sourceType": "github",
+      "skillPath": "skills/docker-project-foundations/SKILL.md",
+      "computedHash": "58fdbbc9acb9264cff9225135998e1fd47f74c28519e2707ee964d408db53afb"
+    },
+    "java-architect": {
+      "source": "Jeffallan/claude-skills",
+      "commit": "67c1961b180dc92cf08983344627109e983e8f51",
+      "sourceType": "github",
+      "skillPath": "skills/java-architect/SKILL.md",
+      "computedHash": "c3d5e80388eb46a07a0021defeae3716823da3ec769945a8a5d1731b83238ec7"
+    },
+    "java-coding-standards": {
+      "source": "affaan-m/ECC",
+      "commit": "3f14a103a8694e51c1df9a806217a6d0b5f7a6f7",
+      "sourceType": "github",
+      "skillPath": "skills/java-coding-standards/SKILL.md",
+      "computedHash": "11df0ff4be3c05e6edf33ab47709c525fb884090b424f5c76da4610f15b0f83a"
+    },
+    "java-hibernate-jpa": {
+      "source": "github/awesome-copilot",
+      "commit": "f10fdb8b2660ce85c98f220b2f1ca24653768a5c",
+      "sourceType": "github",
+      "skillPath": "skills/java-hibernate-jpa/SKILL.md",
+      "computedHash": "12c3a77543bd283b7c0fd68af40babccc782014d89ace21aa32dfc9cb51143ea"
+    },
+    "java-junit": {
+      "source": "github/awesome-copilot",
+      "commit": "a255a193d1318e5a9ca3e9e575897f9a7845c099",
+      "sourceType": "github",
+      "skillPath": "skills/java-junit/SKILL.md",
+      "computedHash": "53d2be39e3fe25b0d3b5f2aa5fee78689b8e1c63d31bb96150190d31429b60fd"
+    },
+    "java-springboot": {
+      "source": "github/awesome-copilot",
+      "commit": "a255a193d1318e5a9ca3e9e575897f9a7845c099",
+      "sourceType": "github",
+      "skillPath": "skills/java-springboot/SKILL.md",
+      "computedHash": "7a3a5343773c126e788966041eca919180e3347f01b66d5dea8dd9923cafd897"
+    },
+    "jpa-patterns": {
+      "source": "affaan-m/ECC",
+      "commit": "3f14a103a8694e51c1df9a806217a6d0b5f7a6f7",
+      "sourceType": "github",
+      "skillPath": "skills/jpa-patterns/SKILL.md",
+      "computedHash": "1bb54df0b3c3c016a9b031e11c2365017e50176b47e69010cf4b4f54fff56823"
+    },
+    "mermaid-diagrams": {
+      "source": "softaworks/agent-toolkit",
+      "commit": "3027f20f3181758385a1bb8c022d4041dfb4de84",
+      "sourceType": "github",
+      "skillPath": "skills/mermaid-diagrams/SKILL.md",
+      "computedHash": "c425d7bc17756e5c0538e57286a008b18a45d0967401695c003692badf0cb37a"
+    },
+    "openapi-spec-generation": {
+      "source": "wshobson/agents",
+      "commit": "42203085cfc5736204bf0f6d436dff7e1da0bf3f",
+      "sourceType": "github",
+      "skillPath": "plugins/documentation-generation/skills/openapi-spec-generation/SKILL.md",
+      "computedHash": "7d034b06630d89c13d4ac440529eb1832ac8643beddb62ba68fc05324e0a21f1"
+    },
+    "redis-core": {
+      "source": "redis/agent-skills",
+      "commit": "74708dab4b3f81a9845803c3f642a4f7d443af69",
+      "sourceType": "github",
+      "skillPath": "skills/redis-core/SKILL.md",
+      "computedHash": "90a1693b597e61a3224a203661e26022f94d2c17cea1f659d826cd783aea34d5"
+    },
+    "spring-boot-testing": {
+      "source": "github/awesome-copilot",
+      "commit": "f10fdb8b2660ce85c98f220b2f1ca24653768a5c",
+      "sourceType": "github",
+      "skillPath": "skills/spring-boot-testing/SKILL.md",
+      "computedHash": "00b15f274b55e37a903c037e9919c359c703d26a7f474017febde24025079c23"
+    },
+    "spring-security": {
+      "source": "github/awesome-copilot",
+      "commit": "f10fdb8b2660ce85c98f220b2f1ca24653768a5c",
+      "sourceType": "github",
+      "skillPath": "skills/spring-security/SKILL.md",
+      "computedHash": "c1fa8c28347cfc1c8bc5449b08ec4a101bbe8ca5e075ac3b647f6f0b9213f7dd"
+    },
+    "sql-pro": {
+      "source": "Jeffallan/claude-skills",
+      "commit": "67c1961b180dc92cf08983344627109e983e8f51",
+      "sourceType": "github",
+      "skillPath": "skills/sql-pro/SKILL.md",
+      "computedHash": "13d19fc2883068fd814af8407c88af63b88e825578003aba62e3153d3e28ee3f"
+    },
+    "testing-strategy": {
+      "source": "anthropics/knowledge-work-plugins",
+      "commit": "b4c9a4e1de4b42868b74a6fe30ac766f64e43a3e",
+      "sourceType": "github",
+      "skillPath": "engineering/skills/testing-strategy/SKILL.md",
+      "computedHash": "baedd86aacb5771735dd1174d85c7c1e0e8375f4202b4e4ca141b22d5ddcc59f"
+    }
+  }
+}

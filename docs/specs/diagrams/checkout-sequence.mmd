@@ -1,0 +1,64 @@
+sequenceDiagram
+    autonumber
+    actor FE as Frontend
+    participant BFF as Checkout BFF
+    participant Cache as Redis
+    participant PS as Product Service
+    participant PMS as Payment Methods Service
+    participant DB as PostgreSQL
+    participant RMQ as RabbitMQ
+
+    Note over FE,RMQ: Pre-Checkout Flow
+
+    FE->>BFF: POST /operations/pre-checkout {productSlugs: ["basic", "premium"]}
+
+    par Product Retrieval (with caching)
+        BFF->>Cache: GET products:active
+        alt Cache Hit
+            Cache-->>BFF: Product list
+        else Cache Miss
+            BFF->>PS: GET /products?active=true
+            PS-->>BFF: Product list
+            BFF->>Cache: SETEX products:active 600s
+        end
+        BFF->>BFF: Filter by requested slugs
+        BFF->>BFF: Validate all exist & active
+    and Payment Methods Retrieval (with caching)
+        BFF->>Cache: GET payment-methods:active
+        alt Cache Hit
+            Cache-->>BFF: Payment methods
+        else Cache Miss
+            BFF->>PMS: GET /payment-methods?active=true
+            PMS-->>BFF: Payment methods list
+            BFF->>Cache: SETEX payment-methods:active 900s
+        end
+    end
+
+    BFF->>BFF: Calculate total amount
+    BFF->>DB: INSERT shopping_cart (PENDING, total)
+    BFF->>DB: INSERT cart_item (for each product)
+    DB-->>BFF: cartId (generated)
+    BFF->>DB: INSERT outbox (CART_UPDATED event)
+    BFF->>Cache: SET cart:{cartId} 1800s
+
+    Note over BFF,RMQ: Outbox Relay publishes CART_UPDATED
+
+    BFF-->>FE: 201 Created {cartId, products, paymentMethods, totalAmount, currency}
+
+    Note over FE,RMQ: Synchronous Checkout Flow
+
+    FE->>BFF: POST /operations/checkout {cartId, paymentMethodId, paymentData}
+    BFF->>DB: SELECT cart WITH items, paymentData, paymentMethods
+    BFF->>BFF: Validate cart exists & PENDING
+    BFF->>BFF: Validate paymentMethod offered for cart
+    BFF->>BFF: Validate cart not already paid
+
+    alt Card ending in 0002
+        BFF->>DB: UPDATE shopping_cart (status unchanged)
+        BFF-->>FE: 402 Payment Declined {error: PAYMENT_DECLINED}
+    else Valid payment
+        BFF->>DB: UPDATE shopping_cart SET status=PAID, paid_at=now()
+        BFF->>DB: INSERT outbox (ORDER_CREATED, PAYMENT_PROCESSED)
+        BFF->>Cache: DEL cart:{cartId}
+        BFF-->>FE: 200 OK {checkoutId, status: APPROVED, paymentDetails}
+    end

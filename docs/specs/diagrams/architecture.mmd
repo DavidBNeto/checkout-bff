@@ -1,0 +1,37 @@
+
+flowchart TB
+    FE[Frontend / API Consumer]
+
+    subgraph BFF["Checkout BFF - Spring Boot"]
+        API[REST Controllers]
+        APP[Application Services]
+        DOMAIN[Domain Layer]
+        DB[(PostgreSQL)]
+        CACHE[(Redis)]
+        OUTBOX[Outbox Publisher]
+    end
+
+    subgraph External["External Services - Mocked"]
+        PRODUCTS[Product Service]
+        METHODS[Payment Methods Service]
+    end
+
+    subgraph Messaging["RabbitMQ"]
+        QUEUE[Payment Queue]
+        DLQ[Dead Letter Queue]
+    end
+
+    WORKER[Payment Worker]
+
+    FE --> API
+    API --> APP
+    APP --> DOMAIN
+    APP --> PRODUCTS
+    APP --> METHODS
+    APP --> DB
+    APP --> CACHE
+    APP --> OUTBOX
+    OUTBOX --> QUEUE
+    QUEUE --> WORKER
+    WORKER --> DB
+    QUEUE -. failed messages .-> DLQ

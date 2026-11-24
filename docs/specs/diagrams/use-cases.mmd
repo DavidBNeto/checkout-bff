@@ -1,0 +1,92 @@
+useCaseDiagram
+    actor Frontend as "Frontend Application"
+    actor User as "End User"
+
+    package "Checkout BFF" {
+        usecase UC1 as "Create Pre-Checkout Cart"
+        usecase UC2 as "Validate Products"
+        usecase UC3 as "Retrieve Payment Methods"
+        usecase UC4 as "Calculate Total Amount"
+        usecase UC5 as "Persist Cart"
+        usecase UC6 as "Synchronous Checkout"
+        usecase UC7 as "Asynchronous Checkout"
+        usecase UC8 as "Poll Checkout Status"
+        usecase UC9 as "Simulate Payment"
+        usecase UC10 as "Prevent Duplicate Payment"
+        usecase UC11 as "Handle Declined Payment"
+        usecase UC12 as "Cache External Responses"
+        usecase UC13 as "Publish Domain Events"
+    }
+
+    package "External Services" {
+        actor PS as "Product Service"
+        actor PMS as "Payment Methods Service"
+    }
+
+    package "Infrastructure" {
+        actor DB as "PostgreSQL"
+        actor Redis as "Redis Cache"
+        actor RMQ as "RabbitMQ"
+    }
+
+    Frontend --> UC1
+    User --> Frontend
+
+    UC1 --> UC2 : include
+    UC1 --> UC3 : include
+    UC1 --> UC4 : include
+    UC1 --> UC5 : include
+    UC1 --> UC12 : include
+    UC1 --> UC13 : include
+
+    UC2 --> PS
+    UC3 --> PMS
+    UC5 --> DB
+    UC12 --> Redis
+    UC13 --> RMQ
+
+    Frontend --> UC6
+    UC6 --> UC9 : include
+    UC6 --> UC10 : include
+    UC6 --> UC11 : include
+    UC6 --> UC5 : extend
+    UC6 --> UC13 : include
+
+    Frontend --> UC7
+    UC7 --> UC5 : extend
+    UC7 --> UC13 : include
+
+    Frontend --> UC8
+    UC8 --> DB
+
+    UC9 --> DB
+    UC10 --> DB
+    UC11 --> DB
+
+    note right of UC1
+        Pre-Checkout Flow:
+        1. Receive product slugs
+        2. Validate products (UC2)
+        3. Get payment methods (UC3)
+        4. Calculate total (UC4)
+        5. Persist cart (UC5)
+        6. Cache response (UC12)
+        7. Publish event (UC13)
+    end note
+
+    note right of UC6
+        Sync Checkout Flow:
+        1. Validate cart & payment method
+        2. Simulate payment (UC9)
+        3. Prevent duplicate (UC10)
+        4. Handle decline (UC11)
+        5. Update cart & publish events
+    end note
+
+    note right of UC7
+        Async Checkout Flow:
+        1. Validate cart & payment method
+        2. Create checkout operation (PENDING)
+        3. Publish PAYMENT_REQUEST event
+        4. Return 202 Accepted
+    end note

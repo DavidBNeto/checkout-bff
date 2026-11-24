@@ -1,0 +1,54 @@
+sequenceDiagram
+    autonumber
+    actor FE as Frontend
+    participant BFF as Checkout BFF
+    participant DB as PostgreSQL
+    participant RMQ as RabbitMQ
+    participant Worker as Payment Worker
+
+    Note over FE,Worker: Async Checkout Flow
+
+    FE->>BFF: POST /operations/checkout/async {cartId, paymentMethodId}
+    BFF->>DB: Validate cart exists & PENDING
+    BFF->>DB: Validate payment method offered for cart
+    BFF->>DB: Create CheckoutOperation (PENDING)
+    BFF->>DB: Insert OutboxEvent (PAYMENT_REQUEST)
+    BFF-->>FE: 202 Accepted {checkoutId}
+
+    Note over BFF,RMQ: Outbox Relay (background)
+    par Outbox Relay
+        BFF->>DB: SELECT unpublished outbox events
+        DB-->>BFF: PAYMENT_REQUEST event
+        BFF->>RMQ: Publish to checkout.exchange (payment.request)
+        RMQ-->>BFF: ACK
+        BFF->>DB: UPDATE outbox SET published_at = now()
+    end
+
+    Note over RMQ,Worker: Payment Worker Consumes
+    RMQ->>Worker: Deliver PAYMENT_REQUEST
+    Worker->>DB: Check idempotency (checkoutId processed?)
+    alt Already Processed
+        Worker->>RMQ: ACK (duplicate)
+    else New Request
+        Worker->>DB: Update CheckoutOperation (PROCESSING)
+        Worker->>Worker: Simulate payment processing
+        alt Card ending in 0002
+            Worker->>DB: Update CheckoutOperation (DECLINED)
+            Worker->>DB: Insert OutboxEvent (PAYMENT_PROCESSED - DECLINED)
+        else Valid payment
+            Worker->>DB: Update CheckoutOperation (APPROVED)
+            Worker->>DB: Update ShoppingCart (PAID, paid_at)
+            Worker->>DB: Insert OutboxEvent (PAYMENT_PROCESSED - APPROVED)
+        else Error
+            Worker->>DB: Update CheckoutOperation (FAILED)
+            Worker->>DB: Insert OutboxEvent (PAYMENT_PROCESSED - FAILED)
+        end
+        Worker->>RMQ: ACK
+    end
+
+    Note over FE,BFF: Status Polling
+    loop Until terminal state
+        FE->>BFF: GET /operations/checkouts/{checkoutId}
+        BFF->>DB: SELECT CheckoutOperation
+        BFF-->>FE: 200 {status, paymentDetails}
+    end

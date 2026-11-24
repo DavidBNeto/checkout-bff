@@ -1,0 +1,57 @@
+stateDiagram-v2
+    [*] --> PENDING : Pre-checkout creates cart
+
+    state PENDING {
+        [*] --> CartCreated
+        CartCreated --> ItemsAdded : Add item
+        ItemsAdded --> CartCreated : Add more items
+    }
+
+    PENDING --> PROCESSING : Checkout initiated (sync/async)
+
+    state PROCESSING {
+        [*] --> PaymentSimulation
+        PaymentSimulation --> ValidatingPayment
+        ValidatingPayment --> ProcessingCard : Credit/Debit Card
+        ValidatingPayment --> ProcessingPix : Pix
+        ValidatingPayment --> ProcessingBoleto : Boleto
+    }
+
+    PROCESSING --> APPROVED : Payment successful
+    PROCESSING --> DECLINED : Card ends in 0002 / Insufficient funds
+    PROCESSING --> FAILED : Technical error / Timeout
+
+    APPROVED --> PAID : Cart updated
+    PAID --> [*]
+
+    DECLINED --> PENDING : Retry with different method
+    DECLINED --> EXPIRED : Max retries / User abandons
+
+    FAILED --> PENDING : Retry (async) / User retries (sync)
+    FAILED --> EXPIRED : Max retries exceeded
+
+    PENDING --> EXPIRED : TTL exceeded (30 min)
+    PENDING --> CANCELLED : Explicit cancellation
+    PENDING --> ABANDONED : User leaves flow
+
+    EXPIRED --> [*]
+    CANCELLED --> [*]
+    ABANDONED --> [*]
+
+    note right of APPROVED
+        - Cart status = PAID
+        - paid_at timestamp set
+        - Outbox: ORDER_CREATED, PAYMENT_PROCESSED
+    end note
+
+    note right of DECLINED
+        - Cart remains PENDING
+        - Payment attempt recorded
+        - Outbox: PAYMENT_PROCESSED (DECLINED)
+    end note
+
+    note right of FAILED
+        - Cart remains PENDING
+        - Error logged
+        - Outbox: PAYMENT_PROCESSED (FAILED)
+    end note
