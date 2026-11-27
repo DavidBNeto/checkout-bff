@@ -53,8 +53,8 @@ The pre-checkout response returns an array of payment method names:
 
 | Condition | Result | Details |
 |-----------|--------|---------|
-| Valid Pix key | APPROVED | Returns simulated Pix copy-paste code (BR Code format) |
-| Invalid Pix key | DECLINED | Invalid key format |
+| Valid PIX payer (name + valid CPF) | APPROVED | Returns simulated Pix copy-paste code (BR Code format) |
+| Invalid PIX payer (missing name or invalid CPF) | DECLINED | Invalid payer data |
 
 ---
 
@@ -84,11 +84,17 @@ The pre-checkout response returns an array of payment method names:
 
 ```json
 {
-  "type": "PIX"
+  "type": "PIX",
+  "pixPayer": {
+    "name": "JOHN DOE",
+    "cpf": "52998224725"
+  }
 }
 ```
 
-Note: Pix key is not sent in the checkout request for simulation purposes. The Pix code is generated server-side.
+**Field Constraints**:
+- `name`: Required, min 1 char
+- `cpf`: Required, 11 digits, validated with check digits (Stella library)
 
 ---
 
@@ -161,7 +167,7 @@ Note: Pix key is not sent in the checkout request for simulation purposes. The P
 - Full card number (PAN)
 - CVV/CVC
 - Expiry date (stored separately if needed)
-- Pix key (only for processing)
+- PIX payer CPF (only for validation, not persisted)
 
 ### 6.2 Data Returned to Frontend
 - Last 4 digits of card (approved only)

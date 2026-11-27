@@ -13,12 +13,12 @@ stateDiagram-v2
         [*] --> PaymentSimulation
         PaymentSimulation --> ValidatingPayment
         ValidatingPayment --> ProcessingCard : Credit/Debit Card
-        ValidatingPayment --> ProcessingPix : Pix
+        ValidatingPayment --> ProcessingPix : Pix (name + CPF)
         ValidatingPayment --> ProcessingBoleto : Boleto
     }
 
     PROCESSING --> APPROVED : Payment successful
-    PROCESSING --> DECLINED : Card ends in 0002 / Insufficient funds
+    PROCESSING --> DECLINED : Card ends in 0002 / Invalid CPF / Insufficient funds
     PROCESSING --> FAILED : Technical error / Timeout
 
     APPROVED --> PAID : Cart updated
@@ -41,7 +41,7 @@ stateDiagram-v2
     note right of APPROVED
         - Cart status = PAID
         - paid_at timestamp set
-        - Outbox: ORDER_CREATED, PAYMENT_PROCESSED
+        - Outbox: ORDER_CREATED (with pixPayer if PIX), PAYMENT_PROCESSED
     end note
 
     note right of DECLINED

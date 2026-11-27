@@ -1,0 +1,9 @@
+services:
+  postgres:
+    image: 'postgres:17-alpine'
+    environment:
+      - 'POSTGRES_DB=payment-service'
+      - 'POSTGRES_PASSWORD=checkout'
+      - 'POSTGRES_USER=checkout'
+    ports:
+      - '5432'

@@ -136,20 +136,26 @@ Published when a checkout is initiated (sync or async).
 public record OrderCreatedEvent(
     String eventId,
     String eventType,         // "ORDER_CREATED"
-    Long cartId,
-    String checkoutId,        // For async checkout
+    String cartId,            // UUID
+    String checkoutId,        // UUID for async checkout
     Long paymentMethodId,
     String paymentMethodName,
     BigDecimal amount,
     String currency,
     PaymentDetailsEvent paymentDetails,
+    PixPayerEvent pixPayer,   // PIX payer info (name and CPF) - only for PIX
     Instant timestamp,
     String correlationId
 ) {}
 
 public record PaymentDetailsEvent(
     String type,              // "CREDIT_CARD", "DEBIT_CARD", "PIX"
-    String maskedData         // Last 4 digits for card
+    String maskedData         // Last 4 digits for card / pix-{checkoutId} for PIX
+) {}
+
+public record PixPayerEvent(
+    String name,              // Payer full name
+    String cpf                // Payer CPF (validated 11-digit format)
 ) {}
 ```
 

@@ -1,0 +1,52 @@
+# Git
+.git
+.gitignore
+
+# Build
+target/
+build/
+*.jar
+*.war
+
+# Maven
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.project
+.classpath
+.settings/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Docker
+Dockerfile*
+.dockerignore
+docker-compose*.yaml
+docker-compose*.yml
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.jenkins/
+
+# Test
+**/target/surefire-reports/
+**/target/failsafe-reports/
+**/target/test-results/

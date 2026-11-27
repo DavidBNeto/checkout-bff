@@ -1,7 +1,7 @@
 erDiagram
     SHOPPING_CART ||--o{ CART_ITEM : contains
-    SHOPPING_CART ||--|| PAYMENT_DATA : uses
-    PAYMENT_DATA }|--|| PAYMENT_METHOD : "method"
+    SHOPPING_CART ||--o{ CART_PAYMENT_METHOD : "has"
+    CART_PAYMENT_METHOD }|--|| PAYMENT_METHOD : "method"
     CART_ITEM }|--|| PRODUCT : references
     SHOPPING_CART ||--o{ CHECKOUT_OPERATION : "initiates"
     CHECKOUT_OPERATION ||--o{ PAYMENT_ATTEMPT : "has"
@@ -9,7 +9,7 @@ erDiagram
 
     SHOPPING_CART {
         bigint id PK
-        bigint payment_data_id FK,UK
+        uuid public_id UK
         numeric(10,2) price
         varchar(50) status "PENDING, PAID, EXPIRED, CANCELLED"
         timestamp paid_at
@@ -21,6 +21,11 @@ erDiagram
         bigint cart_id FK
         bigint product_id FK
         int quantity
+        numeric(10,2) unit_price
+        varchar(100) product_slug
+        varchar(200) product_name
+        text product_description
+        varchar(3) currency
         %% Unique constraint: (cart_id, product_id)
     }
 
@@ -37,14 +42,16 @@ erDiagram
     PAYMENT_METHOD {
         bigint id PK
         varchar(100) name UK
+        varchar(100) normalized_name UK
         boolean active
     }
 
-    PAYMENT_DATA {
+    CART_PAYMENT_METHOD {
         bigint id PK
-        bigint method_id FK
-        varchar(255) holder
-        text details "Encrypted/tokenized"
+        bigint cart_id FK
+        bigint payment_method_id FK
+        varchar(100) payment_method_name
+        %% Unique constraint: (cart_id, payment_method_id)
     }
 
     CHECKOUT_OPERATION {
@@ -52,10 +59,12 @@ erDiagram
         bigint cart_id FK
         varchar(50) status "PENDING, PROCESSING, APPROVED, DECLINED, FAILED"
         bigint payment_method_id FK
+        varchar(100) payment_method_name
+        varchar(20) payment_method_type "CREDIT_CARD, DEBIT_CARD, PIX"
         text payment_data_snapshot "JSON"
         numeric(10,2) amount
         varchar(3) currency
-        varchar(20) payment_type "SYNC, ASYNC"
+        varchar(36) idempotency_key UK
         timestamp created_at
         timestamp completed_at
     }

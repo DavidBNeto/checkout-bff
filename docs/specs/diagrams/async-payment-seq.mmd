@@ -8,11 +8,12 @@ sequenceDiagram
 
     Note over FE,Worker: Async Checkout Flow
 
-    FE->>BFF: POST /operations/checkout/async {cartId, paymentMethodId}
+    FE->>BFF: POST /operations/checkout/async {cartId, paymentMethod: {type, card|pixPayer}}
     BFF->>DB: Validate cart exists & PENDING
     BFF->>DB: Validate payment method offered for cart
+    BFF->>BFF: Validate payment details (CPF for PIX, card data for cards)
     BFF->>DB: Create CheckoutOperation (PENDING)
-    BFF->>DB: Insert OutboxEvent (PAYMENT_REQUEST)
+    BFF->>DB: Insert OutboxEvent (ORDER_CREATED with pixPayer if PIX)
     BFF-->>FE: 202 Accepted {checkoutId}
 
     Note over BFF,RMQ: Outbox Relay (background)

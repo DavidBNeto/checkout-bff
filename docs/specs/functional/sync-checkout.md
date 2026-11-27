@@ -60,6 +60,10 @@ Process payment for a previously created cart and return the final result in the
       "number": "string",
       "expiry": "MM/YY",
       "cvv": "string"
+    },
+    "pixPayer": {  // Required for PIX
+      "name": "string",
+      "cpf": "string"  // 11 digits, validated with check digits
     }
   }
 }
@@ -125,8 +129,8 @@ Simulate payment processing according to [Payment Specification](payment.md#3-pa
 **Pix Payment Rules**:
 | Condition | Result | Details |
 |-----------|--------|---------|
-| Valid Pix key | APPROVED | Returns simulated Pix copy-paste code |
-| Invalid Pix key | DECLINED | Invalid key format |
+| Valid PIX payer (name + valid CPF) | APPROVED | Returns simulated Pix copy-paste code |
+| Invalid PIX payer (missing name or invalid CPF) | DECLINED | Invalid payer data |
 
 ---
 
@@ -316,7 +320,7 @@ The successful checkout response must include the products that were paid for (s
 
 ### AC-SYNC-003: Successful Pix Payment
 **Given** a valid cart with Pix payment method  
-**And** valid Pix key format (email, phone, CPF, or random key)  
+**And** valid PIX payer data (name and valid CPF with check digits)  
 **When** POST /api/v1/operations/checkout  
 **Then** 201 Created with:
 - `status`: "APPROVED"
@@ -399,9 +403,9 @@ The successful checkout response must include the products that were paid for (s
 
 ---
 
-### AC-SYNC-010: Invalid Pix Key
+### AC-SYNC-010: Invalid PIX Payer CPF
 **Given** a valid cart with Pix payment method  
-**And** invalid Pix key format  
+**And** invalid PIX payer CPF (fails check digit validation)  
 **When** POST /api/v1/operations/checkout  
 **Then** 402 Payment Declined (same as AC-SYNC-002)
 

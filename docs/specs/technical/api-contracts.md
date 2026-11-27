@@ -388,7 +388,6 @@ This document defines the API contracts for the Checkout BFF, including the Pre-
 #### Request Body Schema
 
 ```json
-
 {
   "type": "object",
   "required": ["cartId", "paymentMethod"],
@@ -463,7 +462,7 @@ This document defines the API contracts for the Checkout BFF, including the Pre-
                   "type": "string",
                   "minLength": 15,
                   "maxLength": 20,
-                  "description": "Credit card number"
+                  "description": "Debit card number"
                 },
                 "expiry": {
                   "type": "string",
@@ -474,7 +473,7 @@ This document defines the API contracts for the Checkout BFF, including the Pre-
                   "type": "string",
                   "minLength": 3,
                   "maxLength": 4,
-                  "description": "Credit card security code"
+                  "description": "Debit card security code"
                 }
               },
               "additionalProperties": false
@@ -484,12 +483,31 @@ This document defines the API contracts for the Checkout BFF, including the Pre-
         },
         {
           "type": "object",
-          "required": ["type"],
+          "required": ["type", "pixPayer"],
           "properties": {
             "type": {
               "type": "string",
               "const": "PIX",
               "description": "PIX payment method"
+            },
+            "pixPayer": {
+              "type": "object",
+              "required": [ "name", "cpf" ],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "PIX payer full name"
+                },
+                "cpf": {
+                  "type": "string",
+                  "minLength": 11,
+                  "maxLength": 14,
+                  "pattern": "^[0-9]{11}$|^([0-9]{3}[.]){2}[0-9]{3}-[0-9]{2}$",
+                  "description": "PIX payer CPF (11 digits, validated with check digits)"
+                }
+              },
+              "additionalProperties": false
             }
           },
           "additionalProperties": false
@@ -505,14 +523,13 @@ This document defines the API contracts for the Checkout BFF, including the Pre-
       "type": "CREDIT_CARD",
       "card": {
         "holderName": "Ana Souza",
-        "token": "card-token-reference",
+        "number": "4111 1111 1111 1111",
         "expiry": "12/28",
-        "installments": 3
+        "cvv": "123"
       }
     }
   }
 }
-
 ```
 
 #### Field Constraints
@@ -927,7 +944,7 @@ This document defines the API contracts for the Checkout BFF, including the Pre-
 
 ### 4.2 Request
 
-The asynchronous checkout endpoint uses the same schemas for the request as the synchronous checkout endpoint. More data can be found [here](#32-request)
+The asynchronous checkout endpoint uses the same request schemas as the synchronous checkout endpoint. See [Section 3.2](#32-request) for the complete request schema with updated PIX and card payment structures.
 
 ### 4.3 Success Response
 

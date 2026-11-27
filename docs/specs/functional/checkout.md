@@ -25,7 +25,9 @@ Process payment for a previously created cart and return the final result in the
 
 **Request Body**:
 - `cartId`: UUID of the cart from pre-checkout
-- `paymentMethod`: Payment method object with type and details (CREDIT_CARD, DEBIT_CARD, or PIX)
+- `paymentMethod`: Payment method object with type and details:
+  - CREDIT_CARD/DEBIT_CARD: requires `card` object with `holderName`, `number`, `expiry`, `cvv`
+  - PIX: requires `pixPayer` object with `name` and `cpf` (11-digit validated CPF)
 
 ### FR-CHK-002: Asynchronous Checkout
 **Priority**: Extension  
@@ -64,7 +66,7 @@ Prevent an already approved cart from being paid again (idempotency).
 Simulate payment processing with these rules:
 - Card ending in `0002` → DECLINED
 - Other valid cards → APPROVED
-- Pix → APPROVED (returns simulated Pix code)
+- PIX with valid payer (name + valid CPF) → APPROVED (returns simulated Pix code)
 
 ### FR-CHK-007: Payment Response
 **Priority**: Required  

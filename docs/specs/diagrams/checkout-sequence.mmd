@@ -47,18 +47,19 @@ sequenceDiagram
 
     Note over FE,RMQ: Synchronous Checkout Flow
 
-    FE->>BFF: POST /operations/checkout {cartId, paymentMethodId, paymentData}
-    BFF->>DB: SELECT cart WITH items, paymentData, paymentMethods
+    FE->>BFF: POST /operations/checkout {cartId, paymentMethod: {type, card|pixPayer}}
+    BFF->>DB: SELECT cart WITH items, paymentMethods
     BFF->>BFF: Validate cart exists & PENDING
     BFF->>BFF: Validate paymentMethod offered for cart
     BFF->>BFF: Validate cart not already paid
+    BFF->>BFF: Validate payment details (CPF for PIX, card data for cards)
 
     alt Card ending in 0002
         BFF->>DB: UPDATE shopping_cart (status unchanged)
         BFF-->>FE: 402 Payment Declined {error: PAYMENT_DECLINED}
     else Valid payment
         BFF->>DB: UPDATE shopping_cart SET status=PAID, paid_at=now()
-        BFF->>DB: INSERT outbox (ORDER_CREATED, PAYMENT_PROCESSED)
+        BFF->>DB: INSERT outbox (ORDER_CREATED with pixPayer if PIX, PAYMENT_PROCESSED)
         BFF->>Cache: DEL cart:{cartId}
         BFF-->>FE: 200 OK {checkoutId, status: APPROVED, paymentDetails}
     end
